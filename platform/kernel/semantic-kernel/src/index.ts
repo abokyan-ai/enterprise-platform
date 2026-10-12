@@ -10,18 +10,68 @@
 
 // ─── Identity ─────────────────────────────────────────────────────────────────
 export {
+  SemanticElementId,
+  type SemanticElementIdParseResult,
+  SemanticElementIdValidationError,
+  type SemanticElementIdErrorCode,
+  SEMANTIC_ELEMENT_ID_MIN_LENGTH,
+  SEMANTIC_ELEMENT_ID_MAX_LENGTH,
+  SEMANTIC_ELEMENT_ID_PATTERN,
+  SemanticContextRef,
+  type SemanticContextRefParseResult,
+  SemanticContextRefValidationError,
+  type SemanticContextRefErrorCode,
+  SEMANTIC_CONTEXT_REF_MIN_LENGTH,
+  SEMANTIC_CONTEXT_REF_MAX_LENGTH,
+  SEMANTIC_CONTEXT_REF_START_PATTERN,
+  SEMANTIC_CONTEXT_REF_PATTERN,
+} from './identity/index.js';
+
+export {
   type SemanticId,
   createSemanticId,
   isSemanticId,
   SemanticKernelError,
 } from './semantic-id.js';
 
-// ─── Element Contract ─────────────────────────────────────────────────────────
+// ─── Naming ───────────────────────────────────────────────────────────────────
+export {
+  Namespace,
+  type NamespaceParseResult,
+  NamespaceValidationError,
+  type NamespaceErrorCode,
+  NAMESPACE_SEPARATOR,
+  NAMESPACE_MAX_LENGTH,
+  NAMESPACE_MAX_SEGMENT_LENGTH,
+  NAMESPACE_MAX_DEPTH,
+  NAMESPACE_MIN_DEPTH,
+  NAMESPACE_SEGMENT_START_PATTERN,
+  NAMESPACE_SEGMENT_FULL_PATTERN,
+  QualifiedName,
+  type QualifiedNameParseResult,
+  QualifiedNameValidationError,
+  type QualifiedNameErrorCode,
+  LOCAL_NAME_MAX_LENGTH,
+  QUALIFIED_NAME_MAX_LENGTH,
+  LOCAL_NAME_START_PATTERN,
+  LOCAL_NAME_FULL_PATTERN,
+} from './naming/index.js';
+
+// ─── Element Contract (SK-05) ────────────────────────────────────────────────
+export {
+  type SemanticElement,
+  type CreateSemanticElementParams,
+  createSemanticElement,
+  isSemanticElement,
+  SemanticElementValidationError,
+  type SemanticElementErrorCode,
+  SEMANTIC_ELEMENT_ERROR_CODES,
+} from './elements/index.js';
+
+// Legacy metadata stubs from ARC-01 (pending SK-06 kind taxonomy & SK-10 facets)
 export {
   type SemanticElementKind,
   type SemanticElementMetadata,
-  type SemanticElement,
-  isSemanticElement,
 } from './semantic-element.js';
 
 // ─── Version Reference ────────────────────────────────────────────────────────

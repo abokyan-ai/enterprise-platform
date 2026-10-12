@@ -50,7 +50,8 @@ export type FieldType =
  * A field definition within a TypeDefinition.
  * Fields are components of a type — composition over inheritance.
  */
-export interface FieldDefinition extends SemanticElement {
+export interface FieldDefinition {
+  readonly semanticId: SemanticId;
   readonly kind: 'field';
   readonly fieldType: FieldType;
   readonly required?: boolean;
@@ -65,7 +66,8 @@ export interface FieldDefinition extends SemanticElement {
  * - Instance = stateful entity record.
  * These must remain architecturally distinct.
  */
-export interface TypeDefinition extends SemanticElement {
+export interface TypeDefinition {
+  readonly semanticId: SemanticId;
   readonly kind: 'type';
   readonly namespace: string;
   readonly fields: ReadonlyArray<FieldDefinition>;

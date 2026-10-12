@@ -41,6 +41,9 @@
       ],
       "@ecosystem/architecture-harness": [
         "tools/architecture/src/index.ts"
+      ],
+      "@ecosystem/platform-cli": [
+        "tools/platform-cli/src/index.ts"
       ]
     }
   },

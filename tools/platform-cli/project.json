@@ -1,0 +1,31 @@
+{
+  "name": "platform-cli",
+  "projectType": "application",
+  "root": "tools/platform-cli",
+  "sourceRoot": "tools/platform-cli/src",
+  "tags": ["layer:tool", "scope:platform", "runtime:node", "framework:none"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/tools/platform-cli",
+        "tsConfig": "tools/platform-cli/tsconfig.lib.json",
+        "packageJson": "tools/platform-cli/package.json",
+        "main": "tools/platform-cli/src/index.ts",
+        "assets": []
+      }
+    },
+    "typecheck": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "tsConfig": "tools/platform-cli/tsconfig.lib.json",
+        "outputPath": "tmp/typecheck/platform-cli",
+        "main": "tools/platform-cli/src/index.ts"
+      }
+    },
+    "run": {
+      "command": "node tools/platform-cli/dist/main.js"
+    }
+  }
+}

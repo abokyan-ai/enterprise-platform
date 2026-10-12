@@ -19,6 +19,8 @@
     "test:architecture": "node tools/architecture/check-dependency-rules.mjs",
     "architecture:check": "node tools/architecture/dist/cli.js",
     "typecheck": "nx run-many --target=typecheck --all",
+    "cli": "node tools/platform-cli/dist/main.js",
+    "cli:build": "nx build platform-cli",
     "graph": "nx graph"
   },
   "devDependencies": {
