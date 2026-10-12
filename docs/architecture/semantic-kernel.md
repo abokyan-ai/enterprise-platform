@@ -1,9 +1,9 @@
 # Semantic Kernel Architecture & Identity Primitives
 
-> **Document Version:** 1.0.0  
+> **Document Version:** 1.1.0\
 > **Status:** Approved Architectural Specification  
 > **Layer:** `B. Semantic Kernel` (`layer:kernel`)  
-> **Milestone:** `SK-01 — SemanticElementId`  
+> **Milestone:** `SK-01 through SK-06 — Semantic Kernel Foundations`\
 > **Package:** `@ecosystem/semantic-kernel`  
 > **Audience:** Core Meta-Model Architects, Compiler Engineers, Platform Integrators
 
@@ -427,3 +427,172 @@ The base contract strictly excludes:
 - Identity equality is determined strictly by `elementA.id.equals(elementB.id)`.
 - Contextual naming equality is determined by `elementA.qualifiedName.equals(elementB.qualifiedName) && elementA.contextRef.equals(elementB.contextRef)`.
 - An authorized rename produces a new immutable definition sharing the same stable `SemanticElementId` with an altered `QualifiedName`.
+
+---
+
+## 13. Semantic Element Kinds (SK-06)
+
+### 13.1 Purpose and Ownership
+
+`SemanticElementKind` classifies a semantic **definition** at the platform level.
+It answers what category of definition an element declares. The implementation
+belongs to `platform/kernel/semantic-kernel/src/elements/semantic-element-kind.ts`
+and is published through `@ecosystem/semantic-kernel`.
+
+A kind does not identify an element, name it, resolve its context, describe an
+instance's data, select a compiler pass, provide an executor, map a database
+table, or grant permission. It is independent of `SemanticElementId`,
+`Namespace`, `QualifiedName`, `SemanticContextRef`, versions, references, and
+primitive semantic value types.
+
+### 13.2 Authoritative SK-06 Baseline
+
+No separate comprehensive taxonomy was approved before SK-06. The baseline
+retains exactly the nine lowercase values explicitly named by the ARC-01
+`SemanticElementKind` stub. Model Core already uses `type` and `field`, so the
+canonical case is preserved. This section and ADR-014 establish the closed
+SK-06 baseline; task examples are not an additional source of recognized codes.
+
+| API Constant | Canonical Code | Definition Category |
+| --- | --- | --- |
+| `SemanticElementKinds.TYPE` | `type` | A semantic type definition describing a domain's data or conceptual type. |
+| `SemanticElementKinds.FIELD` | `field` | A named field or attribute definition within a semantic structure. |
+| `SemanticElementKinds.RELATIONSHIP` | `relationship` | A definition of an association between semantic elements or types. |
+| `SemanticElementKinds.ACTION` | `action` | A declared operation expressing intent to produce a meaningful effect. |
+| `SemanticElementKinds.EVENT` | `event` | A definition of an immutable fact that has occurred; not a future command. |
+| `SemanticElementKinds.CAPABILITY` | `capability` | A declared functional ability; authority to exercise it is governed separately. |
+| `SemanticElementKinds.FACET` | `facet` | A definition of an orthogonal semantic concern that can be composed with elements. |
+| `SemanticElementKinds.NAMESPACE` | `namespace` | A definition declaring a semantic naming scope; not a tenant or storage partition. |
+| `SemanticElementKinds.APPLICATION` | `application` | A definition composing semantic application intent; not a running host process or UI component. |
+
+These codes classify definitions. In particular, `facet` does not implement
+SK-10, and `namespace` does not turn every SK-02 `Namespace` value object into a
+`SemanticElement`. Recognition does not implement concrete Action, Event,
+Relationship, Capability, Facet, Namespace, or Application definitions.
+
+`policy`, `constraint`, `expression`, and `workflow` remain unrecognized future
+candidates. Business concepts (`customer`, `invoice`, `employee`, `sales_order`)
+and scalar names (`string`, `integer`, `boolean`, `decimal`) are not built-in
+kinds. The baseline contains no generic `other` fallback.
+
+### 13.3 Representation and Immutability
+
+`SemanticElementKinds` is a frozen literal object. Its values derive the closed
+`SemanticElementKind` string-literal union. No `| string`, unsafe parsing cast,
+numeric enum, class wrapper, display label, or mutable registry widens the union.
+
+The internal membership collection is derived from that one declaration and
+frozen. Classification strings are immutable primitives. Equality uses `===`
+on canonical values; declaration order and object reference identity carry no
+semantic meaning. `Object.values(SemanticElementKinds)` permits enumeration
+without granting mutation or registration access.
+
+### 13.4 Public API and Validation
+
+```typescript
+import {
+  SemanticElementKinds,
+  isSemanticElementKind,
+  parseSemanticElementKind,
+  SemanticElementKindValidationError,
+  SEMANTIC_ELEMENT_KIND_ERROR_CODES,
+  type SemanticElementKind,
+  type SemanticElementKindErrorCode,
+} from '@ecosystem/semantic-kernel';
+```
+
+| API | Contract |
+| --- | --- |
+| `SemanticElementKinds` | Frozen named constants containing all nine canonical codes. |
+| `SemanticElementKind` | Closed union derived from those values; supports compile-time narrowing and exhaustive handling. |
+| `isSemanticElementKind(value: unknown)` | Membership guard; returns true only for an exact recognized string primitive. |
+| `parseSemanticElementKind(value: unknown)` | Returns the unchanged canonical value or throws a controlled validation error. |
+| `SemanticElementKindValidationError` | Extends the existing `SemanticKernelError` and exposes a typed `code`. |
+| `SemanticElementKindErrorCode` | Union of the two stable diagnostic codes declared below. |
+| `SEMANTIC_ELEMENT_KIND_ERROR_CODES` | Frozen names for those diagnostic codes. |
+
+| Error Code | Input Category |
+| --- | --- |
+| `SEMANTIC_ELEMENT_KIND_NON_STRING` | `undefined`, `null`, number, boolean, array, object, symbol, bigint, function, or boxed string. |
+| `SEMANTIC_ELEMENT_KIND_UNKNOWN_KIND` | Any string outside the nine canonical codes, including empty strings, unknown categories, case variations, whitespace, version suffixes, and display labels. |
+
+Parsing is strict and case-sensitive. `type` is accepted; `TYPE` and `Type` are
+not. The uppercase constant property name is not an external code. Leading,
+trailing, embedded, newline, tab, and Unicode whitespace are not trimmed.
+Adapters can explicitly clean user input before calling the Kernel, but the
+Kernel performs no implicit normalization or coercion.
+
+The guard and parser share one membership rule. Non-string input is rejected
+before any caller-defined `toString()` or primitive conversion can run. Error
+messages do not interpolate raw untrusted input. There is no default kind.
+
+### 13.5 Canonical JSON Interchange
+
+A kind serializes as a native JSON string, for example `"type"`. Receiving JSON
+requires validation of the decoded value; a cast does not establish validity.
+
+```typescript
+const kind: SemanticElementKind = SemanticElementKinds.TYPE;
+const serialized = JSON.stringify(kind);
+const decoded: unknown = JSON.parse(serialized);
+const restored = parseSemanticElementKind(decoded);
+```
+
+The intended round-trip contract is `restored === kind`. This example documents
+the API; it is not evidence of an executed behavioral test. Serialization has no
+numeric ordinals, implementation-specific object fields, localized labels, or
+ordering dependencies.
+
+### 13.6 SK-05 Integration and Compatibility
+
+The public SK-05 `SemanticElement`, its factory, and its guard remain unchanged.
+Its required properties are still only `id`, `qualifiedName`, and `contextRef`.
+There is no new mandatory `kind` and no speculative kind-aware extension
+interface. A future consumer whose own definition contract requires classification
+can compose the base with a readonly `SemanticElementKind` property.
+
+The ARC-01 legacy module re-exports the same SK-06 type rather than retaining a
+competing taxonomy. Its internal legacy guard validates `kind` with the new
+membership guard. All nine named codes and current Model Core `type` / `field`
+values remain valid. Removing the old `| string` deliberately rejects arbitrary
+string assignments and unknown legacy kind values; callers handling external
+strings must parse them and handle controlled failures. This tightening is an
+explicit compatibility restriction, not a promise of full compatibility with
+previous arbitrary-string usage.
+
+Kind classification is never inferred from an ID prefix, a qualified name, or a
+context. For example, a Mini Sales Customer definition can independently declare
+ID `typ_customer_123`, name `sales.Customer`, context `sales-context`, and kind
+`type`. A domain concept named Customer is not the foundational kind `customer`.
+
+### 13.7 Extension and Evolution Boundaries
+
+Future additions to the closed union require compatibility review, including
+exhaustive consumers. Existing codes retain their meaning. Removal or renaming
+requires explicit migration planning. Kind values carry no version suffix, and
+SK-06 introduces no SemanticVersion, migration, or version-selection system.
+
+Open extension kinds require a separate explicit contract for ownership,
+namespacing, collision protection, and compatibility. No registration,
+unregistration, discovery, plugin loading, or arbitrary extension string is
+implemented here. Display labels and translations belong to presentation
+adapters and do not affect equality or wire values.
+
+### 13.8 Independence, Determinism, and Verification Limits
+
+Parsing and membership depend only on the supplied input and fixed recognized
+set. They do not access timestamps, randomness, environment variables, tenants,
+users, files, networks, databases, or framework state. No NestJS, Angular,
+PrimeNG, Node-only API, Compiler, Runtime, or persistence dependency is added.
+
+Recognizing `action` does not execute an Action; recognizing `event` does not
+publish an Event; recognizing any kind provides no compiler compatibility,
+storage mapping, or authorization. No API endpoint, CLI command, registry,
+handler, ORM mapping, or later Semantic Kernel capability is introduced.
+
+Automated tests are intentionally not created, modified, or executed for SK-06.
+The single archive `test-archive/SK-06/SK-06-deferred-tests.md` records expected
+verification scenarios as `NOT_RUN — DEFERRED`. Typechecking, non-test builds,
+linting where tooling is available, and static source inspection are separate
+from behavioral verification. Full runtime guarantees remain deferred until
+authorized automated verification is performed.

@@ -14,3 +14,13 @@ export {
   type SemanticElementErrorCode,
   SEMANTIC_ELEMENT_ERROR_CODES,
 } from './semantic-element.js';
+
+export {
+  SemanticElementKinds,
+  type SemanticElementKind,
+  isSemanticElementKind,
+  parseSemanticElementKind,
+  SemanticElementKindValidationError,
+  type SemanticElementKindErrorCode,
+  SEMANTIC_ELEMENT_KIND_ERROR_CODES,
+} from './semantic-element-kind.js';
