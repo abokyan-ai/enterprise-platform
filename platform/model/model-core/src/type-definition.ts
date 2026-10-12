@@ -2,8 +2,8 @@
  * @file type-definition.ts
  * @module @ecosystem/model-core
  *
- * Bridge and re-export barrel for TypeDefinition and legacy model-core types.
- * Re-exports canonical TYPE-01 contracts from `./types/index.js`.
+ * Bridge and re-export barrel for TypeDefinition, FieldDefinition, and legacy model-core types.
+ * Re-exports canonical TYPE-01 and TYPE-02 contracts from `./types/index.js`.
  */
 
 import { type SemanticId } from '@ecosystem/semantic-kernel';
@@ -27,19 +27,20 @@ export interface TypeRef {
   readonly isList?: boolean;
 }
 
-export type FieldType =
+export type LegacyFieldType =
   | { readonly kind: 'primitive'; readonly primitiveKind: PrimitiveKind }
   | { readonly kind: 'ref'; readonly ref: TypeRef };
 
-export interface FieldDefinition {
+export interface LegacyFieldDefinition {
   readonly semanticId: SemanticId;
   readonly kind: 'field';
-  readonly fieldType: FieldType;
+  readonly name?: string;
+  readonly fieldType: LegacyFieldType;
   readonly required?: boolean;
   readonly defaultValue?: unknown;
 }
 
-// ─── Canonical TYPE-01 TypeDefinition contracts ──────────────────────────────
+// ─── Canonical TYPE-01 and TYPE-02 contracts ──────────────────────────────────
 export {
   TYPE_DEFINITION_ERROR_CODES,
   type TypeDefinitionErrorCode,
@@ -56,4 +57,32 @@ export {
   serializeTypeDefinition,
   parseTypeDefinition,
   tryParseTypeDefinition,
+  FIELD_DEFINITION_ERROR_CODES,
+  type FieldDefinitionErrorCode,
+  FieldDefinitionValidationError,
+  type PrimitiveFieldType,
+  type ReferencedFieldType,
+  type FieldType,
+  type FieldTypeJSON,
+  createPrimitiveFieldType,
+  createReferencedFieldType,
+  isPrimitiveFieldType,
+  isReferencedFieldType,
+  isFieldType,
+  equalsFieldType,
+  serializeFieldType,
+  parseFieldType,
+  type FieldDefinition,
+  type CreateFieldDefinitionParams,
+  type LegacyCreateFieldDefinitionParams,
+  type FieldDefinitionJSON,
+  type FieldDefinitionParseResult,
+  isFieldDefinition,
+  createFieldDefinition,
+  sameFieldIdentity,
+  sameFieldOwner,
+  sameExactFieldDefinition,
+  serializeFieldDefinition,
+  parseFieldDefinition,
+  tryParseFieldDefinition,
 } from './types/index.js';

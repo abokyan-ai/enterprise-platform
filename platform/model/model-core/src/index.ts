@@ -27,12 +27,44 @@ export {
   tryParseTypeDefinition,
 } from './types/index.js';
 
+// ─── TYPE-02: Foundational FieldDefinition & FieldType Contracts ──────────────
+export {
+  FIELD_DEFINITION_ERROR_CODES,
+  type FieldDefinitionErrorCode,
+  FieldDefinitionValidationError,
+  type PrimitiveFieldType,
+  type ReferencedFieldType,
+  type FieldType,
+  type FieldTypeJSON,
+  createPrimitiveFieldType,
+  createReferencedFieldType,
+  isPrimitiveFieldType,
+  isReferencedFieldType,
+  isFieldType,
+  equalsFieldType,
+  serializeFieldType,
+  parseFieldType,
+  type FieldDefinition,
+  type CreateFieldDefinitionParams,
+  type LegacyCreateFieldDefinitionParams,
+  type FieldDefinitionJSON,
+  type FieldDefinitionParseResult,
+  isFieldDefinition,
+  createFieldDefinition,
+  sameFieldIdentity,
+  sameFieldOwner,
+  sameExactFieldDefinition,
+  serializeFieldDefinition,
+  parseFieldDefinition,
+  tryParseFieldDefinition,
+} from './types/index.js';
+
 // ─── Legacy Model Core Types (ARC-01 compatibility) ──────────────────────────
 export {
   type PrimitiveKind,
   type TypeRef,
-  type FieldType,
-  type FieldDefinition,
+  type LegacyFieldType,
+  type LegacyFieldDefinition,
 } from './type-definition.js';
 
 // ─── Re-export kernel types needed by model consumers ─────────────────────────
@@ -45,4 +77,6 @@ export type {
   SemanticContextRef,
   SemanticVersion,
   ElementVersionRef,
+  ElementRef,
+  PrimitiveType,
 } from '@ecosystem/semantic-kernel';
