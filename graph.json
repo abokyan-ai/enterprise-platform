@@ -1,0 +1,261 @@
+{
+  "graph": {
+    "nodes": {
+      "platform-contracts": {
+        "name": "platform-contracts",
+        "type": "lib",
+        "data": {
+          "root": "adapters/shared/platform-contracts",
+          "targets": {
+            "build": {
+              "dependsOn": [
+                "^build"
+              ],
+              "cache": true,
+              "executor": "@nx/js:tsc",
+              "outputs": [
+                "{options.outputPath}"
+              ],
+              "options": {
+                "outputPath": "dist/adapters/shared/platform-contracts",
+                "tsConfig": "adapters/shared/platform-contracts/tsconfig.lib.json",
+                "packageJson": "adapters/shared/platform-contracts/package.json",
+                "main": "adapters/shared/platform-contracts/src/index.ts",
+                "assets": []
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "typecheck": {
+              "dependsOn": [
+                "^build"
+              ],
+              "cache": true,
+              "executor": "@nx/js:tsc",
+              "options": {
+                "tsConfig": "adapters/shared/platform-contracts/tsconfig.lib.json",
+                "outputPath": "tmp/typecheck/platform-contracts",
+                "main": "adapters/shared/platform-contracts/src/index.ts"
+              },
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "name": "platform-contracts",
+          "tags": [
+            "npm:private",
+            "layer:contracts",
+            "scope:shared",
+            "runtime:universal",
+            "framework:none"
+          ],
+          "metadata": {
+            "targetGroups": {},
+            "description": "Frontend-safe platform contracts shared between Angular Studio and NestJS API. Zero framework dependencies.",
+            "js": {
+              "packageName": "@ecosystem/platform-contracts",
+              "packageVersion": "0.1.0",
+              "packageExports": {
+                ".": {
+                  "types": "./src/index.d.ts",
+                  "import": "./src/index.js",
+                  "default": "./src/index.js"
+                }
+              },
+              "packageMain": "./src/index.js",
+              "isInPackageManagerWorkspaces": true
+            }
+          },
+          "projectType": "library",
+          "sourceRoot": "adapters/shared/platform-contracts/src",
+          "implicitDependencies": []
+        }
+      },
+      "semantic-kernel": {
+        "name": "semantic-kernel",
+        "type": "lib",
+        "data": {
+          "root": "platform/kernel/semantic-kernel",
+          "targets": {
+            "build": {
+              "dependsOn": [
+                "^build"
+              ],
+              "cache": true,
+              "executor": "@nx/js:tsc",
+              "outputs": [
+                "{options.outputPath}"
+              ],
+              "options": {
+                "outputPath": "dist/platform/kernel/semantic-kernel",
+                "tsConfig": "platform/kernel/semantic-kernel/tsconfig.lib.json",
+                "packageJson": "platform/kernel/semantic-kernel/package.json",
+                "main": "platform/kernel/semantic-kernel/src/index.ts",
+                "assets": []
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "typecheck": {
+              "dependsOn": [
+                "^build"
+              ],
+              "cache": true,
+              "executor": "@nx/js:tsc",
+              "options": {
+                "tsConfig": "platform/kernel/semantic-kernel/tsconfig.lib.json",
+                "outputPath": "tmp/typecheck/semantic-kernel",
+                "main": "platform/kernel/semantic-kernel/src/index.ts"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "test": {
+              "cache": true,
+              "executor": "@nx/vite:test",
+              "outputs": [
+                "{workspaceRoot}/coverage/platform/kernel/semantic-kernel"
+              ],
+              "options": {
+                "reportsDirectory": "../../coverage/platform/kernel/semantic-kernel"
+              },
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "name": "semantic-kernel",
+          "tags": [
+            "npm:private",
+            "npm:platform",
+            "npm:semantic-kernel",
+            "npm:no-deps",
+            "layer:kernel",
+            "scope:platform",
+            "runtime:universal",
+            "framework:none"
+          ],
+          "metadata": {
+            "targetGroups": {},
+            "description": "Semantic Kernel — the zero-dependency foundation of the platform semantic meta-model.",
+            "js": {
+              "packageName": "@ecosystem/semantic-kernel",
+              "packageVersion": "0.1.0",
+              "packageExports": {
+                ".": {
+                  "types": "./src/index.d.ts",
+                  "import": "./src/index.js",
+                  "default": "./src/index.js"
+                }
+              },
+              "packageMain": "./src/index.js",
+              "isInPackageManagerWorkspaces": true
+            }
+          },
+          "projectType": "library",
+          "sourceRoot": "platform/kernel/semantic-kernel/src",
+          "implicitDependencies": []
+        }
+      },
+      "model-core": {
+        "name": "model-core",
+        "type": "lib",
+        "data": {
+          "root": "platform/model/model-core",
+          "targets": {
+            "build": {
+              "dependsOn": [
+                "semantic-kernel:build"
+              ],
+              "cache": true,
+              "executor": "@nx/js:tsc",
+              "outputs": [
+                "{options.outputPath}"
+              ],
+              "options": {
+                "outputPath": "dist/platform/model/model-core",
+                "tsConfig": "platform/model/model-core/tsconfig.lib.json",
+                "packageJson": "platform/model/model-core/package.json",
+                "main": "platform/model/model-core/src/index.ts",
+                "assets": []
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "typecheck": {
+              "dependsOn": [
+                "semantic-kernel:build"
+              ],
+              "cache": true,
+              "executor": "@nx/js:tsc",
+              "options": {
+                "tsConfig": "platform/model/model-core/tsconfig.lib.json",
+                "outputPath": "tmp/typecheck/model-core",
+                "main": "platform/model/model-core/src/index.ts"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "test": {
+              "cache": true,
+              "executor": "@nx/vite:test",
+              "outputs": [
+                "{workspaceRoot}/coverage/platform/model/model-core"
+              ],
+              "options": {
+                "reportsDirectory": "../../coverage/platform/model/model-core"
+              },
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "name": "model-core",
+          "tags": [
+            "npm:private",
+            "layer:model",
+            "scope:platform",
+            "runtime:universal",
+            "framework:none"
+          ],
+          "metadata": {
+            "targetGroups": {},
+            "description": "Semantic Model Core — built on top of the Semantic Kernel. Contains TypeDefinition, FieldDefinition, and core model authoring contracts.",
+            "js": {
+              "packageName": "@ecosystem/model-core",
+              "packageVersion": "0.1.0",
+              "packageExports": {
+                ".": {
+                  "types": "./src/index.d.ts",
+                  "import": "./src/index.js",
+                  "default": "./src/index.js"
+                }
+              },
+              "packageMain": "./src/index.js",
+              "isInPackageManagerWorkspaces": true
+            }
+          },
+          "projectType": "library",
+          "sourceRoot": "platform/model/model-core/src",
+          "implicitDependencies": [
+            "semantic-kernel"
+          ]
+        }
+      }
+    },
+    "dependencies": {
+      "platform-contracts": [],
+      "semantic-kernel": [],
+      "model-core": [
+        {
+          "source": "model-core",
+          "target": "semantic-kernel",
+          "type": "implicit"
+        },
+        {
+          "source": "model-core",
+          "target": "semantic-kernel",
+          "type": "static"
+        }
+      ]
+    }
+  }
+}

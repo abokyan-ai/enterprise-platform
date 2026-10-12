@@ -1,0 +1,38 @@
+{
+  "name": "model-core",
+  "projectType": "library",
+  "root": "platform/model/model-core",
+  "sourceRoot": "platform/model/model-core/src",
+  "tags": ["layer:model", "scope:platform", "runtime:universal", "framework:none"],
+  "implicitDependencies": ["semantic-kernel"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/platform/model/model-core",
+        "tsConfig": "platform/model/model-core/tsconfig.lib.json",
+        "packageJson": "platform/model/model-core/package.json",
+        "main": "platform/model/model-core/src/index.ts",
+        "assets": []
+      },
+      "dependsOn": ["semantic-kernel:build"]
+    },
+    "typecheck": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "tsConfig": "platform/model/model-core/tsconfig.lib.json",
+        "outputPath": "tmp/typecheck/model-core",
+        "main": "platform/model/model-core/src/index.ts"
+      },
+      "dependsOn": ["semantic-kernel:build"]
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{workspaceRoot}/coverage/platform/model/model-core"],
+      "options": {
+        "reportsDirectory": "../../coverage/platform/model/model-core"
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "@ecosystem/model-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Semantic Model Core — built on top of the Semantic Kernel. Contains TypeDefinition, FieldDefinition, and core model authoring contracts.",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js",
+      "default": "./src/index.js"
+    }
+  },
+  "dependencies": {
+    "@ecosystem/semantic-kernel": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.3"
+  }
+}

@@ -1,0 +1,6 @@
+packages:
+  - 'apps/*'
+  - 'platform/**'
+  - 'adapters/**'
+  - 'tools/**'
+  - 'tests/*'

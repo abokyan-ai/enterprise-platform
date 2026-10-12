@@ -1,0 +1,35 @@
+{
+  "name": "semantic-kernel",
+  "projectType": "library",
+  "root": "platform/kernel/semantic-kernel",
+  "sourceRoot": "platform/kernel/semantic-kernel/src",
+  "tags": ["layer:kernel", "scope:platform", "runtime:universal", "framework:none"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/platform/kernel/semantic-kernel",
+        "tsConfig": "platform/kernel/semantic-kernel/tsconfig.lib.json",
+        "packageJson": "platform/kernel/semantic-kernel/package.json",
+        "main": "platform/kernel/semantic-kernel/src/index.ts",
+        "assets": []
+      }
+    },
+    "typecheck": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "tsConfig": "platform/kernel/semantic-kernel/tsconfig.lib.json",
+        "outputPath": "tmp/typecheck/semantic-kernel",
+        "main": "platform/kernel/semantic-kernel/src/index.ts"
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{workspaceRoot}/coverage/platform/kernel/semantic-kernel"],
+      "options": {
+        "reportsDirectory": "../../coverage/platform/kernel/semantic-kernel"
+      }
+    }
+  }
+}

@@ -1,19 +1,37 @@
 {
-  "name": "@enterprise-platform/source",
+  "name": "@ecosystem/platform-workspace",
   "version": "0.0.0",
-  "license": "MIT",
-  "scripts": {},
   "private": true,
-  "dependencies": {},
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.11.1",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@12.11.2",
+  "scripts": {
+    "dev:api": "nx serve api",
+    "dev:studio": "nx serve studio",
+    "build": "nx run-many --target=build --all",
+    "build:api": "nx build api",
+    "build:studio": "nx build studio",
+    "lint": "nx run-many --target=lint --all",
+    "test": "nx run-many --target=test --all",
+    "test:architecture": "node tools/architecture/check-dependency-rules.mjs",
+    "architecture:check": "node --experimental-strip-types tools/architecture/src/cli.ts",
+    "typecheck": "nx run-many --target=typecheck --all",
+    "graph": "nx graph"
+  },
   "devDependencies": {
+    "@nx/angular": "23.3.0",
+    "@nx/eslint": "23.3.0",
     "@nx/js": "23.3.0",
-    "@swc/helpers": "~0.5.18",
+    "@nx/nest": "23.3.0",
+    "@nx/node": "23.3.0",
+    "@nx/vite": "23.3.0",
+    "@nx/workspace": "23.3.0",
     "nx": "23.3.0",
     "prettier": "~3.6.2",
     "tslib": "^2.3.0",
-    "typescript": "~6.0.3"
-  },
-  "workspaces": [
-    "packages/*"
-  ]
+    "typescript": "~5.8.3"
+  }
 }

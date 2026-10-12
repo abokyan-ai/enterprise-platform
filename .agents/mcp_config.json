@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "nx": {
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "nx-mcp@latest",
+        "--no-minimal"
+      ],
+      "cwd": "C:\\Users\\Azman\\Documents\\app\\angular\\enterprise-platform"
+    },
+    "nx-mcp": {
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "npx",
+        "nx",
+        "mcp"
+      ],
+      "cwd": "C:\\Users\\Azman\\Documents\\app\\angular\\enterprise-platform"
+    }
+  }
+}

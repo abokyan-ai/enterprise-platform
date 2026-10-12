@@ -1,0 +1,23 @@
+{
+  "name": "@ecosystem/architecture-harness",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ARC-03 Architecture Fitness Verification Harness and Governance Infrastructure",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "bin": {
+    "arch-check": "./src/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js",
+      "default": "./src/index.js"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.lib.json --noEmit",
+    "check": "node --experimental-strip-types src/cli.ts"
+  }
+}

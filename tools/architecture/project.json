@@ -1,0 +1,20 @@
+{
+  "name": "architecture-harness",
+  "projectType": "library",
+  "root": "tools/architecture",
+  "sourceRoot": "tools/architecture/src",
+  "tags": ["layer:tool", "scope:platform", "runtime:node", "framework:none"],
+  "targets": {
+    "typecheck": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "tsConfig": "tools/architecture/tsconfig.lib.json",
+        "outputPath": "tmp/typecheck/architecture-harness",
+        "main": "tools/architecture/src/index.ts"
+      }
+    },
+    "check": {
+      "command": "node --experimental-strip-types tools/architecture/src/cli.ts"
+    }
+  }
+}

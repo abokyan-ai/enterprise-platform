@@ -1,0 +1,19 @@
+{
+  "name": "@ecosystem/platform-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Frontend-safe platform contracts shared between Angular Studio and NestJS API. Zero framework dependencies.",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js",
+      "default": "./src/index.js"
+    }
+  },
+  "devDependencies": {
+    "typescript": "~5.8.3"
+  }
+}
