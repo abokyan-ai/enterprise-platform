@@ -105,6 +105,47 @@ export {
   compareVersions,
 } from './version-ref.js';
 
+// ─── Semantic References (SK-08) ──────────────────────────────────────────────
+export {
+  // Error infrastructure
+  ELEMENT_REF_ERROR_CODES,
+  ElementRefValidationError,
+  type ElementRefErrorCode,
+
+  // Reference variant types
+  type ElementIdRef,
+  type ElementNameRef,
+  type ElementRef,
+
+  // JSON wire types
+  type ElementIdRefJSON,
+  type ElementNameRefJSON,
+  type ElementRefJSON,
+
+  // Factory functions
+  createElementIdRef,
+  createElementNameRef,
+
+  // Equality
+  equalsElementRef,
+
+  // SK-07 conversion
+  toElementVersionRef,
+
+  // Serialization
+  serializeElementRef,
+
+  // Deserialization / parsing
+  parseElementRef,
+
+  // Type narrowing helpers
+  isElementIdRef,
+  isElementNameRef,
+
+  // Diagnostic rendering (NOT canonical interchange)
+  describeElementRef,
+} from './references/index.js';
+
 // ─── Diagnostics ──────────────────────────────────────────────────────────────
 export {
   type DiagnosticSeverity,
