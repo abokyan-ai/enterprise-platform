@@ -9,23 +9,17 @@
  * Architecture: layer:kernel — Pure TypeScript, zero framework dependencies.
  */
 
-import { SemanticId } from './semantic-id.js';
+import type { SemanticId } from './semantic-id.js';
+import {
+  isSemanticElementKind,
+  type SemanticElementKind,
+} from './elements/semantic-element-kind.js';
 
 /**
- * The kind classification of a semantic element.
- * Extensible via discriminated unions in upper layers.
+ * Retain the legacy internal type export while sharing the closed SK-06
+ * classification. No second taxonomy or arbitrary-string escape hatch.
  */
-export type SemanticElementKind =
-  | 'type'
-  | 'field'
-  | 'relationship'
-  | 'action'
-  | 'event'
-  | 'capability'
-  | 'facet'
-  | 'namespace'
-  | 'application'
-  | string;
+export type { SemanticElementKind } from './elements/semantic-element-kind.js';
 
 /**
  * Minimal metadata attached to every semantic element.
@@ -64,5 +58,7 @@ export interface SemanticElement {
 export function isSemanticElement(value: unknown): value is SemanticElement {
   if (typeof value !== 'object' || value === null) return false;
   const obj = value as Record<string, unknown>;
-  return typeof obj['semanticId'] === 'string' && typeof obj['kind'] === 'string';
+  return (
+    typeof obj['semanticId'] === 'string' && isSemanticElementKind(obj['kind'])
+  );
 }

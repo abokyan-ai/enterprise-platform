@@ -57,7 +57,7 @@ export {
   LOCAL_NAME_FULL_PATTERN,
 } from './naming/index.js';
 
-// ─── Element Contract (SK-05) ────────────────────────────────────────────────
+// ─── Element Contract & Classification (SK-05 / SK-06) ────────────────────────
 export {
   type SemanticElement,
   type CreateSemanticElementParams,
@@ -66,13 +66,17 @@ export {
   SemanticElementValidationError,
   type SemanticElementErrorCode,
   SEMANTIC_ELEMENT_ERROR_CODES,
+  SemanticElementKinds,
+  type SemanticElementKind,
+  isSemanticElementKind,
+  parseSemanticElementKind,
+  SemanticElementKindValidationError,
+  type SemanticElementKindErrorCode,
+  SEMANTIC_ELEMENT_KIND_ERROR_CODES,
 } from './elements/index.js';
 
-// Legacy metadata stubs from ARC-01 (pending SK-06 kind taxonomy & SK-10 facets)
-export {
-  type SemanticElementKind,
-  type SemanticElementMetadata,
-} from './semantic-element.js';
+// Legacy optional metadata contract from ARC-01, unchanged by SK-06.
+export { type SemanticElementMetadata } from './semantic-element.js';
 
 // ─── Version Reference ────────────────────────────────────────────────────────
 export {
@@ -97,4 +101,5 @@ export {
  * This is NOT a runtime service; it is a static compile-time declaration.
  */
 export const KERNEL_VERSION = '0.1.0' as const;
-export const PLATFORM_NAME = 'Model-Driven Enterprise Ecosystem Platform' as const;
+export const PLATFORM_NAME =
+  'Model-Driven Enterprise Ecosystem Platform' as const;
