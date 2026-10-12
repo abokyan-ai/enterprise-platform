@@ -1,9 +1,9 @@
 # Semantic Kernel Architecture & Identity Primitives
 
-> **Document Version:** 1.1.0\
+> **Document Version:** 1.2.0\
 > **Status:** Approved Architectural Specification  
 > **Layer:** `B. Semantic Kernel` (`layer:kernel`)  
-> **Milestone:** `SK-01 through SK-06 — Semantic Kernel Foundations`\
+> **Milestone:** `SK-01 through SK-07 — Semantic Kernel Foundations`\
 > **Package:** `@ecosystem/semantic-kernel`  
 > **Audience:** Core Meta-Model Architects, Compiler Engineers, Platform Integrators
 
@@ -596,3 +596,231 @@ verification scenarios as `NOT_RUN — DEFERRED`. Typechecking, non-test builds,
 linting where tooling is available, and static source inspection are separate
 from behavioral verification. Full runtime guarantees remain deferred until
 authorized automated verification is performed.
+
+---
+
+## 14. Exact Semantic Version References (SK-07)
+
+### 14.1 Concepts and Ownership
+
+`SemanticVersion` represents one exact semantic **definition version**.
+`ElementVersionRef` combines one existing stable `SemanticElementId` with one
+exact `SemanticVersion`. Both live in the Kernel's `src/versioning` subsystem and
+are exported through `@ecosystem/semantic-kernel`.
+
+A version does not replace identity. Customer definitions at `1.0.0` and `1.1.0`
+can share ID `customer-element-id` while producing different exact references.
+Versions do not denote instance/storage revisions, package releases, compiler
+versions, deployments, artifact revisions, publication state, or authorization.
+
+### 14.2 Exact Grammar and Canonical Spelling
+
+The grammar follows [SemVer 2.0.0](https://semver.org/spec/v2.0.0.html) for exact
+versions, within the explicit platform bounds below:
+
+```text
+MAJOR.MINOR.PATCH[-PRERELEASE][+BUILD]
+```
+
+Core components are canonical nonnegative decimal integers. Leading zeroes,
+signs, missing components, and extra components are invalid. Prerelease and build
+lists consist of nonempty dot-separated ASCII alphanumeric/hyphen identifiers.
+Purely numeric prerelease identifiers cannot have leading zeroes; numeric build
+identifiers can. Case and the full supplied spelling are preserved exactly.
+
+Valid examples include `0.0.0`, `1.2.3`, `2.0.0-beta.2`, and
+`2.1.0-rc.1+build.45`. Empty text, whitespace, `v1.2.3`, `01.2.3`, empty
+identifiers, non-ASCII digits or separators, and duplicate build separators are
+rejected. No trimming, case folding, Unicode normalization, or object coercion
+occurs. `latest`, `stable`, ranges, wildcards, and partial versions are rejected
+instead of resolved.
+
+### 14.3 Numeric Precision and Resource Bounds
+
+| Exported Constant | Bound |
+| --- | --- |
+| `SEMANTIC_VERSION_MAX_COMPONENT` | `9007199254740991` (`Number.MAX_SAFE_INTEGER`), inclusive, for each core component. |
+| `SEMANTIC_VERSION_MAX_LENGTH` | 256 characters for the complete exact version. |
+| `SEMANTIC_VERSION_MAX_IDENTIFIER_LENGTH` | 64 characters per prerelease or build identifier. |
+| `SEMANTIC_VERSION_MAX_PRERELEASE_IDENTIFIERS` | 16 prerelease identifiers. |
+| `SEMANTIC_VERSION_MAX_BUILD_IDENTIFIERS` | 16 build identifiers. |
+
+All bounds apply together; the full-string bound can be stricter than the sum of
+the identifier allowances. Oversized input is rejected before parsing work, never
+truncated. Core decimal text is compared to the maximum before Number conversion;
+this prevents unsafe rounding. Ordering uses comparisons rather than subtracting
+components or parsing a full version as a floating-point number.
+
+Numeric prerelease identifiers remain canonical digit strings and can exceed
+the Number safe range within the 64-character identifier limit. Their digit
+counts, followed by ordinal text comparison for equal counts, provide exact
+numeric ordering without Number conversion. ASCII ordinal comparison is used for
+non-numeric identifiers; locale settings have no effect.
+
+### 14.4 SemanticVersion API, Equality, and Precedence
+
+| API | Contract |
+| --- | --- |
+| `SemanticVersion.parse(value: unknown)` | Strict throwing parse of an exact canonical version string. |
+| `SemanticVersion.tryParse(value: unknown)` | Discriminated `{ ok: true, value }` / `{ ok: false, error }` result for validation failures. |
+| `SemanticVersion.isValid(value: unknown)` | Guard validating a raw version string; class instances are not raw strings. |
+| `major`, `minor`, `patch` | Readonly safe integer components. |
+| `prerelease`, `buildMetadata` | Readonly frozen identifier arrays; absent lists are empty. |
+| `equals(other: unknown)` | Exact canonical equality, including identifier case and build metadata. |
+| `comparePrecedence(other: SemanticVersion)` | Normalized `-1`, `0`, or `1`; compares core and prerelease, excluding build metadata. |
+| `toString()`, `toJSON()` | Unchanged canonical full version as a native string. |
+
+Construction is private. The instance and defensive copies of its arrays are
+frozen; no setters, automatic increments, or mutable internal lists are exposed.
+
+Precedence compares major/minor/patch numerically, then prerelease identifiers.
+A stable version outranks its prerelease. Numeric identifiers compare numerically
+and rank below non-numeric identifiers. Non-numeric identifiers compare in ASCII
+order. After an equal prefix, the longer prerelease list has higher precedence.
+Build metadata never determines precedence.
+
+For example, `1.9.0` precedes `1.10.0`, `1.0.0-beta.2` precedes
+`1.0.0-beta.11`, and `1.0.0-alpha` precedes `1.0.0`. Versions
+`1.0.0+build.1` and `1.0.0+build.2` have equal precedence but are not exactly equal.
+This distinction is explicit; comparison is not a compatibility analysis.
+
+### 14.5 Exact ElementVersionRef Composition
+
+```typescript
+import {
+  SemanticElementId,
+  SemanticVersion,
+  ElementVersionRef,
+} from '@ecosystem/semantic-kernel';
+
+const elementId = SemanticElementId.parse('customer-element-id');
+const version = SemanticVersion.parse('1.1.0');
+const reference = ElementVersionRef.fromParts(elementId, version);
+```
+
+Both components are mandatory authentic Kernel class instances, following the
+existing `instanceof` convention. Raw strings, missing parts, names, contexts,
+and selectors are not accepted as typed components. The existing ID is reused;
+no identity is generated or changed. The reference is frozen and exposes only
+readonly `elementId` and `version` components.
+
+`reference.equals(other)` requires a reference instance, stable ID equality, and
+full exact version equality. Equal precedence alone is insufficient. Changing
+either ID or version, including build metadata, creates a different exact
+reference. There is no custom textual `toString()` grammar or ambiguous delimiter.
+
+### 14.6 Structured JSON Interchange and Deserialization
+
+The reference's canonical wire representation is:
+
+```json
+{
+  "elementId": "customer-element-id",
+  "version": "1.1.0"
+}
+```
+
+`toJSON()` returns a fresh frozen record of these two canonical strings.
+`ElementVersionRef.fromJSON(value: unknown)` accepts an already decoded plain
+record with exactly these two own enumerable data fields. Null-prototype records
+are also supported. Arrays, null, string containers, class instances, inherited
+fields, accessor fields, symbol/extra fields, and missing fields fail shape
+validation. Accessor getters are not used to obtain component data.
+
+ID data is parsed using the unchanged SK-01 grammar. Version data is parsed using
+SemanticVersion. Invalid component values become controlled reference-boundary
+errors. No cast turns wire strings into trusted value objects.
+
+```typescript
+const versionJSON = JSON.stringify(version);
+const decodedVersion: unknown = JSON.parse(versionJSON);
+const restoredVersion = SemanticVersion.parse(decodedVersion);
+
+const referenceJSON = JSON.stringify(reference);
+const decodedReference: unknown = JSON.parse(referenceJSON);
+const restoredReference = ElementVersionRef.fromJSON(decodedReference);
+```
+
+The intended contracts are exact value equality after each reconstruction. These
+examples document the APIs; they are not executed behavioral verification.
+
+### 14.7 Errors and Validation Boundaries
+
+`SemanticVersionValidationError` and `ElementVersionRefValidationError` extend the
+existing `SemanticKernelError`. Their typed code unions are derived from frozen
+`SEMANTIC_VERSION_ERROR_CODES` and `ELEMENT_VERSION_REF_ERROR_CODES` collections.
+Messages do not echo raw untrusted version or reference data.
+
+| SemanticVersion Code | Meaning |
+| --- | --- |
+| `SEMANTIC_VERSION_NON_STRING` | Input is not a string primitive. |
+| `SEMANTIC_VERSION_EMPTY` | Input is an empty string. |
+| `SEMANTIC_VERSION_TOO_LONG` | Full input exceeds the 256-character bound. |
+| `SEMANTIC_VERSION_WHITESPACE` | Input contains whitespace, including Unicode whitespace. |
+| `SEMANTIC_VERSION_INVALID_FORMAT` | Core component count or build separator structure is invalid. |
+| `SEMANTIC_VERSION_INVALID_COMPONENT` | A core component is not a canonical nonnegative integer. |
+| `SEMANTIC_VERSION_UNSAFE_COMPONENT` | A core component exceeds Number.MAX_SAFE_INTEGER. |
+| `SEMANTIC_VERSION_INVALID_PRERELEASE` | Prerelease syntax, empty identifiers, or numeric leading zeroes are invalid. |
+| `SEMANTIC_VERSION_INVALID_BUILD_METADATA` | Build identifier syntax or empty identifiers are invalid. |
+| `SEMANTIC_VERSION_IDENTIFIER_TOO_LONG` | An identifier exceeds 64 characters. |
+| `SEMANTIC_VERSION_TOO_MANY_IDENTIFIERS` | A prerelease/build list exceeds 16 identifiers. |
+| `SEMANTIC_VERSION_INVALID_COMPARISON` | A precedence argument is not a SemanticVersion instance. |
+
+| ElementVersionRef Code | Meaning |
+| --- | --- |
+| `ELEMENT_VERSION_REF_INVALID_SHAPE` | Decoded wire data is not the exact supported record shape or cannot be inspected. |
+| `ELEMENT_VERSION_REF_INVALID_ID` | Typed composition lacks a SemanticElementId, or the wire ID fails SK-01 parsing. |
+| `ELEMENT_VERSION_REF_INVALID_VERSION` | Typed composition lacks a SemanticVersion, or the wire version fails exact parsing. |
+
+Version length validation precedes other string checks. Core validation precedes
+identifier validation. Shape validation precedes ID and then version decoding.
+These orders keep rejection deterministic. Component failure messages at the
+reference boundary remain fixed rather than forwarding raw input summaries.
+
+### 14.8 Existing VersionRef Compatibility
+
+The ARC-01 `VersionRef` retains readonly number fields `major`, `minor`, and
+`patch`, with optional string fields `prerelease` and `build`. Existing helper
+signatures remain available through the public root:
+
+- `parseVersion(string)` delegates to SemanticVersion and returns a frozen
+  structural view, preserving full metadata text.
+- `formatVersion(VersionRef)` validates safe numeric components and optional
+  string fields before rendering and using the same exact parser.
+- `compareVersions(a, b)` delegates to the authoritative precedence comparison
+  and returns a normalized sign, including prerelease behavior.
+
+There is no competing loose parser. Formerly accepted leading zeroes, malformed
+identifier lists, unsafe components, and empty optional metadata now fail strict
+validation. Structural negative zero, non-integers, and non-string optional
+metadata also fail validation. The signed comparison contract remains supported;
+callers must not interpret its result as numeric version distance or full exact
+equality including build metadata. These compatibility changes are deliberate
+and recorded in ADR-015.
+
+### 14.9 Architectural Integration and Deferred Verification
+
+SK-01 identity grammar, SK-02 Namespace, SK-03 QualifiedName, SK-04 context,
+SK-05's three-field base, and SK-06's closed classifications remain unchanged.
+No mandatory version is added to SemanticElement, no versioned base class is
+introduced, and no kind-specific version parser is selected.
+
+A valid exact reference does not establish definition existence, publication,
+compatibility, access, compiler support, or runtime activation. ID text remains
+opaque; spelling resembling a name is not resolved. Context and tenant scope may
+be supplied separately to a future resolver, without being inferred here.
+ElementRef, selectors, ranges, registries, publication, migrations, compatibility
+analysis, automatic version bumping, artifact revisions, instance revisions, and
+storage revisions remain outside SK-07.
+
+All new behavior is portable Pure TypeScript. Parsing, comparison, composition,
+and serialization use no I/O, Node-only API, database, framework, timestamps,
+randomness, environment, locale, active tenant, or current user. No REST endpoint
+or CLI command is added.
+
+The single archive `test-archive/SK-07/SK-07-deferred-tests.md` specifies future
+scenarios as `NOT_RUN — DEFERRED`. No automated test file is created or modified,
+and no test runner, architecture test, or ad hoc parsing experiment is executed.
+Permitted static checks are reported separately; runtime guarantees still need
+future authorized behavioral verification. Core numeric and resource limits, the
+strict two-field wire shape, and future resolution needs are explicit limitations.

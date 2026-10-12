@@ -8,9 +8,16 @@
  * Architecture: layer:kernel — Pure TypeScript, zero framework dependencies.
  */
 
+import {
+  SemanticVersion,
+  SemanticVersionValidationError,
+  SEMANTIC_VERSION_ERROR_CODES,
+  SEMANTIC_VERSION_MAX_LENGTH,
+} from './versioning/semantic-version.js';
+
 /**
- * A validated Semantic Version reference.
- * Follows SemVer 2.0: MAJOR.MINOR.PATCH[-prerelease][+build]
+ * Legacy structural view retained for ARC-01 consumers.
+ * SemanticVersion owns exact parsing, resource bounds, and precedence.
  */
 export interface VersionRef {
   readonly major: number;
@@ -22,40 +29,97 @@ export interface VersionRef {
 
 /**
  * Parses a SemVer string into a VersionRef.
- * Throws SemanticKernelError on invalid format.
+ * Throws SemanticVersionValidationError for invalid or unsupported input.
  */
 export function parseVersion(semver: string): VersionRef {
-  const match = semver.match(
-    /^(\d+)\.(\d+)\.(\d+)(?:-([a-zA-Z0-9.-]+))?(?:\+([a-zA-Z0-9.-]+))?$/,
-  );
-  if (!match) {
-    throw new Error(`Invalid SemVer string: "${semver}"`);
-  }
-  return {
-    major: parseInt(match[1], 10),
-    minor: parseInt(match[2], 10),
-    patch: parseInt(match[3], 10),
-    prerelease: match[4],
-    build: match[5],
-  };
+  const version = SemanticVersion.parse(semver);
+  return Object.freeze({
+    major: version.major,
+    minor: version.minor,
+    patch: version.patch,
+    prerelease:
+      version.prerelease.length > 0 ? version.prerelease.join('.') : undefined,
+    build:
+      version.buildMetadata.length > 0
+        ? version.buildMetadata.join('.')
+        : undefined,
+  });
 }
 
 /**
  * Serializes a VersionRef back to its canonical SemVer string form.
  */
 export function formatVersion(ref: VersionRef): string {
-  let v = `${ref.major}.${ref.minor}.${ref.patch}`;
-  if (ref.prerelease) v += `-${ref.prerelease}`;
-  if (ref.build) v += `+${ref.build}`;
-  return v;
+  return fromLegacyView(ref).toString();
 }
 
 /**
  * Compares two VersionRefs.
- * Returns negative if a < b, 0 if equal, positive if a > b.
+ * Returns -1 / 0 / 1 for SemVer precedence, including prerelease ordering.
+ * Build metadata is ignored for precedence; this is not exact equality.
  */
 export function compareVersions(a: VersionRef, b: VersionRef): number {
-  if (a.major !== b.major) return a.major - b.major;
-  if (a.minor !== b.minor) return a.minor - b.minor;
-  return a.patch - b.patch;
+  return fromLegacyView(a).comparePrecedence(fromLegacyView(b));
+}
+
+function isSafeCoreNumber(value: unknown): value is number {
+  return (
+    typeof value === 'number' &&
+    Number.isSafeInteger(value) &&
+    value >= 0 &&
+    !Object.is(value, -0)
+  );
+}
+
+/** Validate numeric fields before rendering; never coerce caller objects. */
+function fromLegacyView(ref: VersionRef): SemanticVersion {
+  if (typeof ref !== 'object' || ref === null) {
+    throw new SemanticVersionValidationError(
+      SEMANTIC_VERSION_ERROR_CODES.INVALID_COMPONENT,
+      'VersionRef must provide valid numeric version components.',
+    );
+  }
+  const major: unknown = ref.major;
+  const minor: unknown = ref.minor;
+  const patch: unknown = ref.patch;
+  if (
+    !isSafeCoreNumber(major) ||
+    !isSafeCoreNumber(minor) ||
+    !isSafeCoreNumber(patch)
+  ) {
+    throw new SemanticVersionValidationError(
+      SEMANTIC_VERSION_ERROR_CODES.INVALID_COMPONENT,
+      'VersionRef components must be nonnegative safe integers.',
+    );
+  }
+
+  const prerelease: unknown = ref.prerelease;
+  const build: unknown = ref.build;
+  if (prerelease !== undefined && typeof prerelease !== 'string') {
+    throw new SemanticVersionValidationError(
+      SEMANTIC_VERSION_ERROR_CODES.INVALID_PRERELEASE,
+      'VersionRef prerelease must be a string when present.',
+    );
+  }
+  if (build !== undefined && typeof build !== 'string') {
+    throw new SemanticVersionValidationError(
+      SEMANTIC_VERSION_ERROR_CODES.INVALID_BUILD_METADATA,
+      'VersionRef build metadata must be a string when present.',
+    );
+  }
+  if (
+    (prerelease !== undefined &&
+      prerelease.length > SEMANTIC_VERSION_MAX_LENGTH) ||
+    (build !== undefined && build.length > SEMANTIC_VERSION_MAX_LENGTH)
+  ) {
+    throw new SemanticVersionValidationError(
+      SEMANTIC_VERSION_ERROR_CODES.TOO_LONG,
+      'VersionRef metadata exceeds the exact version resource bound.',
+    );
+  }
+  const raw =
+    `${major}.${minor}.${patch}` +
+    (prerelease === undefined ? '' : `-${prerelease}`) +
+    (build === undefined ? '' : `+${build}`);
+  return SemanticVersion.parse(raw);
 }
