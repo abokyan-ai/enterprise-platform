@@ -146,6 +146,59 @@ export {
   describeElementRef,
 } from './references/index.js';
 
+// ─── Primitive Type System (SK-09) ────────────────────────────────────────────
+export {
+  // Primitive Type taxonomy
+  PrimitiveTypes,
+  type PrimitiveType,
+  PRIMITIVE_TYPE_ERROR_CODES,
+  type PrimitiveTypeErrorCode,
+  PrimitiveTypeValidationError,
+  isPrimitiveType,
+  parsePrimitiveType,
+
+  // Resource bounds
+  STRING_MAX_LENGTH,
+  INTEGER_MAX_DIGITS,
+  DECIMAL_MAX_TOTAL_DIGITS,
+  DECIMAL_MAX_FRACTION_DIGITS,
+
+  // Primitive Value error infrastructure
+  PRIMITIVE_VALUE_ERROR_CODES,
+  type PrimitiveValueErrorCode,
+  PrimitiveValueValidationError,
+
+  // Primitive Value type contracts
+  type PrimitiveValue,
+  type PrimitiveValueJSON,
+  type PrimitiveValidationResult,
+
+  // Shape validation
+  validatePrimitiveValue,
+
+  // Construction
+  createPrimitiveValue,
+  createIntegerValueFromSafeNumber,
+
+  // Equality
+  equalsPrimitiveValue,
+
+  // Serialization
+  serializePrimitiveValue,
+
+  // Deserialization
+  parsePrimitiveValue,
+
+  // Type narrowing helpers
+  isStringValue,
+  isBooleanValue,
+  isIntegerValue,
+  isDecimalValue,
+  isDateValue,
+  isTimeValue,
+  isDatetimeValue,
+} from './primitives/index.js';
+
 // ─── Diagnostics ──────────────────────────────────────────────────────────────
 export {
   type DiagnosticSeverity,
