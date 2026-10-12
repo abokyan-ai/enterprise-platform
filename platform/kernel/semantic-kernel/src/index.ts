@@ -199,6 +199,35 @@ export {
   isDatetimeValue,
 } from './primitives/index.js';
 
+// ─── Facet Base Contract (SK-10) ─────────────────────────────────────────────
+export {
+  // Facet Key value object and grammar
+  FACET_KEY_SEPARATOR,
+  FACET_KEY_MIN_LENGTH,
+  FACET_KEY_MAX_LENGTH,
+  FACET_KEY_MAX_SEGMENT_LENGTH,
+  FACET_KEY_MIN_SEGMENTS,
+  FACET_KEY_MAX_SEGMENTS,
+  FACET_KEY_SEGMENT_START_PATTERN,
+  FACET_KEY_SEGMENT_FULL_PATTERN,
+  FACET_KEY_ERROR_CODES,
+  type FacetKeyErrorCode,
+  FacetKeyValidationError,
+  type FacetKeyParseResult,
+  FacetKey,
+
+  // Facet Base Contract and validation
+  FACET_ERROR_CODES,
+  type FacetErrorCode,
+  FacetValidationError,
+  type Facet,
+  type FacetBaseParseResult,
+  validateFacetBase,
+  isFacet,
+  parseFacetBase,
+  tryParseFacetBase,
+} from './facets/index.js';
+
 // ─── Diagnostics ──────────────────────────────────────────────────────────────
 export {
   type DiagnosticSeverity,
