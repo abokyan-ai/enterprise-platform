@@ -1,0 +1,17 @@
+{
+  "name": "studio",
+  "projectType": "application",
+  "root": "apps/studio",
+  "sourceRoot": "apps/studio/src",
+  "tags": ["layer:application", "scope:frontend", "runtime:browser", "framework:angular"],
+  "targets": {
+    "typecheck": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "tsConfig": "apps/studio/tsconfig.app.json",
+        "outputPath": "tmp/typecheck/studio",
+        "main": "apps/studio/src/main.ts"
+      }
+    }
+  }
+}

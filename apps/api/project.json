@@ -1,0 +1,31 @@
+{
+  "name": "api",
+  "projectType": "application",
+  "root": "apps/api",
+  "sourceRoot": "apps/api/src",
+  "tags": ["layer:application", "scope:backend", "runtime:node", "framework:nestjs"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/api",
+        "tsConfig": "apps/api/tsconfig.app.json",
+        "packageJson": "apps/api/package.json",
+        "main": "apps/api/src/main.ts",
+        "assets": []
+      }
+    },
+    "typecheck": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "tsConfig": "apps/api/tsconfig.app.json",
+        "outputPath": "tmp/typecheck/api",
+        "main": "apps/api/src/main.ts"
+      }
+    },
+    "serve": {
+      "command": "node --experimental-strip-types apps/api/src/main.ts"
+    }
+  }
+}

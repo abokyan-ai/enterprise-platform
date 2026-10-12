@@ -1,0 +1,12 @@
+{
+  "name": "@ecosystem/api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Platform Backend Host Application (NestJS Modular Monolith)",
+  "type": "module",
+  "main": "./src/main.js",
+  "scripts": {
+    "start": "node --experimental-strip-types src/main.ts",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit"
+  }
+}

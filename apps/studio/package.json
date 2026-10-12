@@ -1,0 +1,11 @@
+{
+  "name": "@ecosystem/studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Platform Studio Presentation Host Application (Angular 19 Standalone)",
+  "type": "module",
+  "main": "./src/main.js",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.app.json --noEmit"
+  }
+}

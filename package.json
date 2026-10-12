@@ -17,7 +17,7 @@
     "lint": "nx run-many --target=lint --all",
     "test": "nx run-many --target=test --all",
     "test:architecture": "node tools/architecture/check-dependency-rules.mjs",
-    "architecture:check": "node --experimental-strip-types tools/architecture/src/cli.ts",
+    "architecture:check": "node tools/architecture/dist/cli.js",
     "typecheck": "nx run-many --target=typecheck --all",
     "graph": "nx graph"
   },
@@ -33,5 +33,21 @@
     "prettier": "~3.6.2",
     "tslib": "^2.3.0",
     "typescript": "~5.8.3"
+  },
+  "dependencies": {
+    "@angular/common": "^19.0.0",
+    "@angular/compiler": "^19.0.0",
+    "@angular/core": "^19.0.0",
+    "@angular/platform-browser": "^19.0.0",
+    "@angular/platform-browser-dynamic": "^19.0.0",
+    "@angular/router": "^19.0.0",
+    "@nestjs/common": "^12.1.2",
+    "@nestjs/core": "^12.1.2",
+    "@nestjs/platform-express": "^12.1.2",
+    "primeicons": "^7.0.0",
+    "primeng": "^19.0.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "zone.js": "~0.15.0"
   }
 }
