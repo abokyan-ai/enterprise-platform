@@ -2,22 +2,13 @@
  * @file type-definition.ts
  * @module @ecosystem/model-core
  *
- * TypeDefinition — the authoring-time representation of a semantic type.
- * This is a DEFINITION (design-time metadata), not an INSTANCE (entity state).
- *
- * Architecture: layer:model — depends only on @ecosystem/semantic-kernel.
- * FORBIDDEN: NestJS, Angular, PrimeNG, Runtime, Compiler, Database, HTTP.
+ * Bridge and re-export barrel for TypeDefinition and legacy model-core types.
+ * Re-exports canonical TYPE-01 contracts from `./types/index.js`.
  */
 
-import {
-  type SemanticElement,
-  type SemanticId,
-  type SemanticElementMetadata,
-} from '@ecosystem/semantic-kernel';
+import { type SemanticId } from '@ecosystem/semantic-kernel';
 
-/**
- * The primitive scalar types available in the semantic type system.
- */
+// ─── Legacy ARC-01 types preserved for test harness backward compatibility ───
 export type PrimitiveKind =
   | 'string'
   | 'number'
@@ -30,26 +21,16 @@ export type PrimitiveKind =
   | 'blob'
   | 'json';
 
-/**
- * A reference to another semantic type by its SemanticId.
- */
 export interface TypeRef {
   readonly targetId: SemanticId;
   readonly isNullable?: boolean;
   readonly isList?: boolean;
 }
 
-/**
- * The type of a field: either a primitive scalar or a reference to another type.
- */
 export type FieldType =
   | { readonly kind: 'primitive'; readonly primitiveKind: PrimitiveKind }
   | { readonly kind: 'ref'; readonly ref: TypeRef };
 
-/**
- * A field definition within a TypeDefinition.
- * Fields are components of a type — composition over inheritance.
- */
 export interface FieldDefinition {
   readonly semanticId: SemanticId;
   readonly kind: 'field';
@@ -58,40 +39,21 @@ export interface FieldDefinition {
   readonly defaultValue?: unknown;
 }
 
-/**
- * A TypeDefinition represents an authoring-time semantic type.
- *
- * AGENTS.md Rule 6:
- * - Definition = immutable design-time metadata.
- * - Instance = stateful entity record.
- * These must remain architecturally distinct.
- */
-export interface TypeDefinition {
-  readonly semanticId: SemanticId;
-  readonly kind: 'type';
-  readonly namespace: string;
-  readonly fields: ReadonlyArray<FieldDefinition>;
-  readonly metadata?: SemanticElementMetadata;
-}
-
-/**
- * Creates a minimal TypeDefinition.
- * Validates that the semanticId and namespace are non-empty.
- */
-export function createTypeDefinition(params: {
-  semanticId: SemanticId;
-  namespace: string;
-  fields?: FieldDefinition[];
-  metadata?: SemanticElementMetadata;
-}): TypeDefinition {
-  if (!params.namespace || params.namespace.trim().length === 0) {
-    throw new Error('TypeDefinition namespace cannot be empty');
-  }
-  return {
-    semanticId: params.semanticId,
-    kind: 'type',
-    namespace: params.namespace.trim(),
-    fields: Object.freeze([...(params.fields ?? [])]),
-    metadata: params.metadata,
-  };
-}
+// ─── Canonical TYPE-01 TypeDefinition contracts ──────────────────────────────
+export {
+  TYPE_DEFINITION_ERROR_CODES,
+  type TypeDefinitionErrorCode,
+  TypeDefinitionValidationError,
+  type TypeDefinition,
+  type CreateTypeDefinitionParams,
+  type LegacyCreateTypeDefinitionParams,
+  type TypeDefinitionJSON,
+  type TypeDefinitionParseResult,
+  isTypeDefinition,
+  createTypeDefinition,
+  sameTypeIdentity,
+  sameExactTypeVersion,
+  serializeTypeDefinition,
+  parseTypeDefinition,
+  tryParseTypeDefinition,
+} from './types/index.js';
