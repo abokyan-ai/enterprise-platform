@@ -14,7 +14,8 @@
     }
   },
   "dependencies": {
-    "@ecosystem/semantic-kernel": "workspace:*"
+    "@ecosystem/semantic-kernel": "workspace:*",
+    "yaml": "^2.6.0"
   },
   "devDependencies": {
     "typescript": "~5.8.3"
