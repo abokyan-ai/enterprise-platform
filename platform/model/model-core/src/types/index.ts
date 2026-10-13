@@ -54,3 +54,26 @@ export {
   parseFieldDefinition,
   tryParseFieldDefinition,
 } from './field-definition.js';
+
+export {
+  TYPE_REFERENCE_ERROR_CODES,
+  type TypeReferenceErrorCode,
+  TypeReferenceValidationError,
+  type TypeReference,
+  type TypeIdReference,
+  type TypeNameReference,
+  type CreateTypeIdReferenceParams,
+  type CreateTypeNameReferenceParams,
+  type TypeReferenceJSON,
+  type TypeReferenceParseResult,
+  isTypeReference,
+  isTypeIdReference,
+  isTypeNameReference,
+  createTypeReferenceById,
+  createTypeReferenceByName,
+  equalsTypeReference,
+  serializeTypeReference,
+  parseTypeReference,
+  tryParseTypeReference,
+  describeTypeReference,
+} from './type-reference.js';

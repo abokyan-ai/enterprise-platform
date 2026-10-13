@@ -1,0 +1,27 @@
+export {
+  InstanceId,
+  InstanceIdValidationError,
+  INSTANCE_ID_MIN_LENGTH,
+  INSTANCE_ID_MAX_LENGTH,
+  INSTANCE_ID_PATTERN,
+} from './instance-id.js';
+export {
+  createNullInstanceValue,
+  createPresentInstanceValue,
+  createInstanceFieldValue,
+  createSemanticInstance,
+  findInstanceField,
+  isInstanceValue,
+  isInstanceFieldValue,
+  isSemanticInstance,
+  serializeSemanticInstance,
+  parseSemanticInstance,
+  SemanticInstanceValidationError,
+  SEMANTIC_INSTANCE_ERROR_CODES,
+  type SemanticInstanceErrorCode,
+  type InstanceValue,
+  type InstanceFieldValue,
+  type SemanticInstance,
+  type CreateSemanticInstanceParams,
+  type SemanticInstanceJSON,
+} from './semantic-instance.js';
