@@ -1,291 +1,34 @@
-/**
- * @file index.ts
- * @module @ecosystem/model-core
- *
- * Public API barrel for @ecosystem/model-core.
- * Consumers must import ONLY from '@ecosystem/model-core' — never from internal paths.
- *
- * Architecture: layer:model — depends only on @ecosystem/semantic-kernel.
- */
+# ADR-029: Pure Format-Aware Model Loader
 
-// ─── TYPE-01: Foundational TypeDefinition Contract ───────────────────────────
-export {
-  TYPE_DEFINITION_ERROR_CODES,
-  type TypeDefinitionErrorCode,
-  TypeDefinitionValidationError,
-  type TypeDefinition,
-  type CreateTypeDefinitionParams,
-  type LegacyCreateTypeDefinitionParams,
-  type TypeDefinitionJSON,
-  type TypeDefinitionParseResult,
-  isTypeDefinition,
-  createTypeDefinition,
-  sameTypeIdentity,
-  sameExactTypeVersion,
-  serializeTypeDefinition,
-  parseTypeDefinition,
-  tryParseTypeDefinition,
-} from './types/index.js';
+## Status
 
-// ─── TYPE-02: Foundational FieldDefinition & FieldType Contracts ─────────────
-export {
-  FIELD_DEFINITION_ERROR_CODES,
-  type FieldDefinitionErrorCode,
-  FieldDefinitionValidationError,
-  type PrimitiveFieldType,
-  type ReferencedFieldType,
-  type FieldType,
-  type FieldTypeJSON,
-  createPrimitiveFieldType,
-  createReferencedFieldType,
-  isPrimitiveFieldType,
-  isReferencedFieldType,
-  isFieldType,
-  equalsFieldType,
-  serializeFieldType,
-  parseFieldType,
-  type FieldDefinition,
-  type CreateFieldDefinitionParams,
-  type LegacyCreateFieldDefinitionParams,
-  type FieldDefinitionJSON,
-  type FieldDefinitionParseResult,
-  isFieldDefinition,
-  createFieldDefinition,
-  sameFieldIdentity,
-  sameFieldOwner,
-  sameExactFieldDefinition,
-  serializeFieldDefinition,
-  parseFieldDefinition,
-  tryParseFieldDefinition,
-} from './types/index.js';
+Existing MOD-02 decision, documentation repaired during MOD-03.
 
-// ─── TYPE-05: TypeReference — Specialized TypeDefinition Reference ─────────────
-export {
-  TYPE_REFERENCE_ERROR_CODES,
-  type TypeReferenceErrorCode,
-  TypeReferenceValidationError,
-  type TypeReference,
-  type TypeIdReference,
-  type TypeNameReference,
-  type CreateTypeIdReferenceParams,
-  type CreateTypeNameReferenceParams,
-  type TypeReferenceJSON,
-  type TypeReferenceParseResult,
-  isTypeReference,
-  isTypeIdReference,
-  isTypeNameReference,
-  createTypeReferenceById,
-  createTypeReferenceByName,
-  equalsTypeReference,
-  serializeTypeReference,
-  parseTypeReference,
-  tryParseTypeReference,
-  describeTypeReference,
-} from './types/index.js';
+## Context and repository finding
 
-// ─── TYPE-03: Foundational DataFacet Contract ─────────────────────────────────
-export {
-  DATA_FACET_KIND,
-  type DataFacetKind,
-  DATA_FACET_ERROR_CODES,
-  type DataFacetErrorCode,
-  DataFacetValidationError,
-  type DataFacet,
-  type CreateDataFacetParams,
-  type DataFacetJSON,
-  type DataFacetParseResult,
-  isDataFacet,
-  createDataFacet,
-  sameDataFacetOwner,
-  sameExactDataFacet,
-  serializeDataFacet,
-  parseDataFacet,
-  tryParseDataFacet,
-} from './facets/index.js';
+MOD-02 introduces explicit ModelSource/ModelLoadRequest, a syntax parser contract,
+JSON and YAML implementations, and success/failure result factories. The inspected
+base's barrel exported a ModelLoader whose implementation was missing; Model Core's
+root barrel had incorrect authoring-relative paths. This ADR file contained the
+intended TypeScript root API instead of an architectural decision. MOD-03 moves
+that API back to the root, wires subsystem exports, and supplies the missing loader.
+Historical completeness is not inferred from those misplaced exports.
 
-// ─── TYPE-04: Foundational Field Constraints ──────────────────────────────────
-export {
-  FieldConstraintKinds,
-  type FieldConstraintKind,
-  isFieldConstraintKind,
-  STRING_LENGTH_METRIC,
-  type StringLengthMetric,
-  FIELD_CONSTRAINT_ERROR_CODES,
-  type FieldConstraintErrorCode,
-  FieldConstraintValidationError,
-  type MinLengthConstraint,
-  type MaxLengthConstraint,
-  type MinValueConstraint,
-  type MaxValueConstraint,
-  type PrecisionScaleConstraint,
-  type FieldConstraint,
-  type FieldConstraintJSON,
-  type FieldConstraintParseResult,
-  type NumericBoundParams,
-  createMinLengthConstraint,
-  createMaxLengthConstraint,
-  createMinValueConstraint,
-  createMaxValueConstraint,
-  createPrecisionScaleConstraint,
-  isMinLengthConstraint,
-  isMaxLengthConstraint,
-  isMinValueConstraint,
-  isMaxValueConstraint,
-  isPrecisionScaleConstraint,
-  isFieldConstraint,
-  isConstraintApplicableToPrimitive,
-  validateConstraintApplicability,
-  equalsFieldConstraint,
-  compareExactIntegers,
-  compareExactDecimals,
-  serializeFieldConstraint,
-  parseFieldConstraint,
-  tryParseFieldConstraint,
-  type FieldConstraintSet,
-  type CreateFieldConstraintSetParams,
-  type FieldConstraintSetJSON,
-  type FieldConstraintSetParseResult,
-  createFieldConstraintSet,
-  createFieldConstraintSetForField,
-  isFieldConstraintSet,
-  sameFieldConstraintSet,
-  serializeFieldConstraintSet,
-  parseFieldConstraintSet,
-  tryParseFieldConstraintSet,
-} from './constraints/index.js';
+## Decision
 
-// ─── TYPE-06: Foundational Type Validation Rules ──────────────────────────────
-export {
-  TYPE_VALIDATION_DIAGNOSTIC_CODES,
-  type TypeValidationDiagnosticCode,
-  type TypeValidationInput,
-  TypeValidationInputError,
-  validateTypeValidationInput,
-  isTypeValidationInput,
-  type TypeValidationCoverage,
-  type TypeValidationResult,
-  type CreateTypeValidationResultParams,
-  createTypeValidationResult,
-  type TypeValidationRule,
-  validateTypeDefinition,
-  type ValidateTypeDefinitionOptions,
-  STANDARD_TYPE_VALIDATION_RULES,
-  typeClassificationRule,
-  dataFacetOwnerRule,
-  fieldOwnerRule,
-  fieldUniquenessRule,
-  fieldTypeRule,
-  constraintAssociationRule,
-  constraintApplicabilityRule,
-  constraintCoherenceRule,
-} from './validation/index.js';
+Keep the loading boundary in Pure TypeScript Model Core. Sources are caller-owned
+strings with explicit format and optional opaque identity. Native JSON value
+semantics and the existing yaml parser options remain authoritative. Syntax values
+are untrusted until the existing MOD-01 validator/factory accepts them. Loading
+returns typed SUCCESS or FAILURE with SK-11 diagnostics and never acquires files,
+resolves semantic references, constructs canonical models, compiles, or executes.
 
-// ─── TYPE-07: Explicit Immutable Type Registry ──────────────────────────────
-export {
-  TYPE_REGISTRY_ERROR_CODES,
-  type TypeRegistryErrorCode,
-  TypeRegistryValidationError,
-  type CreateTypeRegistryParams,
-  type TypeRegistry,
-  type TypeRegistryNameLookup,
-  type TypeRegistryNameVersionLookup,
-  createTypeRegistry,
-  TypeRegistryLookupStatuses,
-  type TypeRegistryLookupStatus,
-  type TypeRegistryLookupResult,
-  type TypeRegistryFoundResult,
-  type TypeRegistryNotFoundResult,
-  type TypeRegistryAmbiguousResult,
-  createTypeRegistryLookupResult,
-} from './registry/index.js';
+Use a parser port for explicitly supplied implementations. Source provenance is
+an optional extension at this boundary, specified separately in ADR-030. Resource
+and parser failures remain controlled; no invalid partial document is published.
 
-// ─── Legacy Model Core Types (ARC-01 compatibility) ──────────────────────────
-export * from './instances/index.js';
+## Related decisions
 
-// ─── MOD-01: Foundational Authoring Model Schema ──────────────────────────────
-export {
-  AUTHORING_SCHEMA_VERSION,
-  SUPPORTED_AUTHORING_SCHEMA_VERSIONS,
-  type AuthoringSchemaVersion,
-  isAuthoringSchemaVersion,
-  AUTHORING_DIAGNOSTIC_CODES,
-  type AuthoringDiagnosticCode,
-  createAuthoringDiagnostic,
-  type AuthoringTypeDeclaration,
-  type AuthoringTypeDeclarationJSON,
-  type AuthoringTypeDefinition,
-  type AuthoringFieldDefinition,
-  type AuthoringDataFacet,
-  type AuthoringFieldConstraint,
-  type AuthoringTypeReference,
-  isAuthoringTypeDeclaration,
-  isAuthoringTypeDefinition,
-  type AuthoringElementKind,
-  type AuthoringElement,
-  type AuthoringElementJSON,
-  isAuthoringElement,
-  AUTHORING_DOCUMENT_ERROR_CODES,
-  type AuthoringDocumentErrorCode,
-  AuthoringDocumentValidationError,
-  type AuthoringDocument,
-  type AuthoringDocumentJSON,
-  type AuthoringDocumentInput,
-  type AuthoringModel,
-  type AuthoringModelJSON,
-  type AuthoringDocumentParseResult,
-  createAuthoringDocument,
-  serializeAuthoringDocument,
-  parseAuthoringDocument,
-  tryParseAuthoringDocument,
-  isAuthoringDocument,
-  validateAuthoringDocumentStructure,
-  MODEL_SOURCE_FORMATS,
-  type ModelSourceFormat,
-  isModelSourceFormat,
-  normalizeModelSourceFormat,
-  type ModelSource,
-  isModelSource,
-  ensureModelSource,
-  type ModelLoadRequest,
-  isModelLoadRequest,
-  type ModelLoadResult,
-  createModelLoadSuccess,
-  createModelLoadFailure,
-  type ModelDocumentParser,
-  JsonModelParser,
-  YamlModelParser,
-  MODEL_LOADER_DIAGNOSTIC_CODES,
-  type ModelLoaderDiagnosticCode,
-  ModelLoader,
-  modelLoader,
-  loadModel,
-} from './authoring/index.js';
-
-export {
-  type PrimitiveKind,
-  type TypeRef,
-  type LegacyFieldType,
-  type LegacyFieldDefinition,
-} from './type-definition.js';
-
-// ─── Re-export kernel types needed by model consumers ─────────────────────────
-export { DiagnosticSeverities } from '@ecosystem/semantic-kernel';
-
-// End public API.
-export type {
-  SemanticId,
-  SemanticElement,
-  SemanticElementMetadata,
-  SemanticElementId,
-  QualifiedName,
-  SemanticContextRef,
-  SemanticVersion,
-  ElementVersionRef,
-  ElementRef,
-  PrimitiveType,
-  Facet,
-  Diagnostic,
-  DiagnosticSeverity,
-  DiagnosticLocation,
-  DiagnosticCode,
-} from '@ecosystem/semantic-kernel';
+- [MOD-01 authoring schema](ADR-028-authoring-model-schema.md)
+- [MOD-03 parser-derived locations](ADR-030-parser-derived-source-location-tracking.md)
+- [Actual loader API and behavior](../architecture/model-loader.md)

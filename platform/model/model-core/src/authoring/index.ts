@@ -62,3 +62,14 @@ export {
   isAuthoringDocument,
   validateAuthoringDocumentStructure,
 } from './authoring-document.js';
+
+// MOD-03: document-local parser provenance.
+export {
+  SourcePath,
+  type SourcePathSegment,
+  type SourceLocationEntry,
+  type SourceLocationMap,
+} from './source-location/index.js';
+
+// Existing MOD-02 loader contracts.
+export * from './loader/index.js';
