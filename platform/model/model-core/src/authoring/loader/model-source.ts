@@ -7,6 +7,7 @@
  */
 
 import type { ModelSourceFormat } from './model-source-format.js';
+import { assertSourceContent } from './parser-limits.js';
 
 export interface ModelSource {
   readonly content: string;
@@ -23,18 +24,19 @@ export function isModelSource(value: unknown): value is ModelSource {
   return (
     typeof candidate['content'] === 'string' &&
     typeof candidate['format'] === 'string' &&
-    (candidate['sourceId'] === undefined || typeof candidate['sourceId'] === 'string')
+    (candidate['sourceId'] === undefined ||
+      typeof candidate['sourceId'] === 'string')
   );
 }
 
 export function ensureModelSource(value: unknown): ModelSource {
   if (!isModelSource(value)) {
-    throw new TypeError('ModelSource must be a non-null object with string content and format.');
+    throw new TypeError(
+      'ModelSource must be a non-null object with string content and format.',
+    );
   }
 
-  if (value.content.trim().length === 0) {
-    throw new TypeError('ModelSource content cannot be empty or whitespace-only.');
-  }
+  assertSourceContent(value.content);
 
   return Object.freeze({
     content: value.content,

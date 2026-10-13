@@ -1,30 +1,216 @@
 /**
  * @file index.ts
- * @module @ecosystem/model-core/authoring
+ * @module @ecosystem/model-core
  *
- * MOD-01: Authoring Model Schema Subsystem Barrel.
+ * Public API barrel for @ecosystem/model-core.
+ * Consumers must import ONLY from '@ecosystem/model-core' — never from internal paths.
  *
- * Pure TypeScript Model Core subsystem defining the structural schema for
- * authored model documents without loaders, canonicalization, or runtime execution.
+ * Architecture: layer:model — depends only on @ecosystem/semantic-kernel.
  */
 
-// Schema Version
+// ─── TYPE-01: Foundational TypeDefinition Contract ───────────────────────────
+export {
+  TYPE_DEFINITION_ERROR_CODES,
+  type TypeDefinitionErrorCode,
+  TypeDefinitionValidationError,
+  type TypeDefinition,
+  type CreateTypeDefinitionParams,
+  type LegacyCreateTypeDefinitionParams,
+  type TypeDefinitionJSON,
+  type TypeDefinitionParseResult,
+  isTypeDefinition,
+  createTypeDefinition,
+  sameTypeIdentity,
+  sameExactTypeVersion,
+  serializeTypeDefinition,
+  parseTypeDefinition,
+  tryParseTypeDefinition,
+} from './types/index.js';
+
+// ─── TYPE-02: Foundational FieldDefinition & FieldType Contracts ─────────────
+export {
+  FIELD_DEFINITION_ERROR_CODES,
+  type FieldDefinitionErrorCode,
+  FieldDefinitionValidationError,
+  type PrimitiveFieldType,
+  type ReferencedFieldType,
+  type FieldType,
+  type FieldTypeJSON,
+  createPrimitiveFieldType,
+  createReferencedFieldType,
+  isPrimitiveFieldType,
+  isReferencedFieldType,
+  isFieldType,
+  equalsFieldType,
+  serializeFieldType,
+  parseFieldType,
+  type FieldDefinition,
+  type CreateFieldDefinitionParams,
+  type LegacyCreateFieldDefinitionParams,
+  type FieldDefinitionJSON,
+  type FieldDefinitionParseResult,
+  isFieldDefinition,
+  createFieldDefinition,
+  sameFieldIdentity,
+  sameFieldOwner,
+  sameExactFieldDefinition,
+  serializeFieldDefinition,
+  parseFieldDefinition,
+  tryParseFieldDefinition,
+} from './types/index.js';
+
+// ─── TYPE-05: TypeReference — Specialized TypeDefinition Reference ─────────────
+export {
+  TYPE_REFERENCE_ERROR_CODES,
+  type TypeReferenceErrorCode,
+  TypeReferenceValidationError,
+  type TypeReference,
+  type TypeIdReference,
+  type TypeNameReference,
+  type CreateTypeIdReferenceParams,
+  type CreateTypeNameReferenceParams,
+  type TypeReferenceJSON,
+  type TypeReferenceParseResult,
+  isTypeReference,
+  isTypeIdReference,
+  isTypeNameReference,
+  createTypeReferenceById,
+  createTypeReferenceByName,
+  equalsTypeReference,
+  serializeTypeReference,
+  parseTypeReference,
+  tryParseTypeReference,
+  describeTypeReference,
+} from './types/index.js';
+
+// ─── TYPE-03: Foundational DataFacet Contract ─────────────────────────────────
+export {
+  DATA_FACET_KIND,
+  type DataFacetKind,
+  DATA_FACET_ERROR_CODES,
+  type DataFacetErrorCode,
+  DataFacetValidationError,
+  type DataFacet,
+  type CreateDataFacetParams,
+  type DataFacetJSON,
+  type DataFacetParseResult,
+  isDataFacet,
+  createDataFacet,
+  sameDataFacetOwner,
+  sameExactDataFacet,
+  serializeDataFacet,
+  parseDataFacet,
+  tryParseDataFacet,
+} from './facets/index.js';
+
+// ─── TYPE-04: Foundational Field Constraints ──────────────────────────────────
+export {
+  FieldConstraintKinds,
+  type FieldConstraintKind,
+  isFieldConstraintKind,
+  STRING_LENGTH_METRIC,
+  type StringLengthMetric,
+  FIELD_CONSTRAINT_ERROR_CODES,
+  type FieldConstraintErrorCode,
+  FieldConstraintValidationError,
+  type MinLengthConstraint,
+  type MaxLengthConstraint,
+  type MinValueConstraint,
+  type MaxValueConstraint,
+  type PrecisionScaleConstraint,
+  type FieldConstraint,
+  type FieldConstraintJSON,
+  type FieldConstraintParseResult,
+  type NumericBoundParams,
+  createMinLengthConstraint,
+  createMaxLengthConstraint,
+  createMinValueConstraint,
+  createMaxValueConstraint,
+  createPrecisionScaleConstraint,
+  isMinLengthConstraint,
+  isMaxLengthConstraint,
+  isMinValueConstraint,
+  isMaxValueConstraint,
+  isPrecisionScaleConstraint,
+  isFieldConstraint,
+  isConstraintApplicableToPrimitive,
+  validateConstraintApplicability,
+  equalsFieldConstraint,
+  compareExactIntegers,
+  compareExactDecimals,
+  serializeFieldConstraint,
+  parseFieldConstraint,
+  tryParseFieldConstraint,
+  type FieldConstraintSet,
+  type CreateFieldConstraintSetParams,
+  type FieldConstraintSetJSON,
+  type FieldConstraintSetParseResult,
+  createFieldConstraintSet,
+  createFieldConstraintSetForField,
+  isFieldConstraintSet,
+  sameFieldConstraintSet,
+  serializeFieldConstraintSet,
+  parseFieldConstraintSet,
+  tryParseFieldConstraintSet,
+} from './constraints/index.js';
+
+// ─── TYPE-06: Foundational Type Validation Rules ──────────────────────────────
+export {
+  TYPE_VALIDATION_DIAGNOSTIC_CODES,
+  type TypeValidationDiagnosticCode,
+  type TypeValidationInput,
+  TypeValidationInputError,
+  validateTypeValidationInput,
+  isTypeValidationInput,
+  type TypeValidationCoverage,
+  type TypeValidationResult,
+  type CreateTypeValidationResultParams,
+  createTypeValidationResult,
+  type TypeValidationRule,
+  validateTypeDefinition,
+  type ValidateTypeDefinitionOptions,
+  STANDARD_TYPE_VALIDATION_RULES,
+  typeClassificationRule,
+  dataFacetOwnerRule,
+  fieldOwnerRule,
+  fieldUniquenessRule,
+  fieldTypeRule,
+  constraintAssociationRule,
+  constraintApplicabilityRule,
+  constraintCoherenceRule,
+} from './validation/index.js';
+
+// ─── TYPE-07: Explicit Immutable Type Registry ──────────────────────────────
+export {
+  TYPE_REGISTRY_ERROR_CODES,
+  type TypeRegistryErrorCode,
+  TypeRegistryValidationError,
+  type CreateTypeRegistryParams,
+  type TypeRegistry,
+  type TypeRegistryNameLookup,
+  type TypeRegistryNameVersionLookup,
+  createTypeRegistry,
+  TypeRegistryLookupStatuses,
+  type TypeRegistryLookupStatus,
+  type TypeRegistryLookupResult,
+  type TypeRegistryFoundResult,
+  type TypeRegistryNotFoundResult,
+  type TypeRegistryAmbiguousResult,
+  createTypeRegistryLookupResult,
+} from './registry/index.js';
+
+// ─── Legacy Model Core Types (ARC-01 compatibility) ──────────────────────────
+export * from './instances/index.js';
+
+// ─── MOD-01: Foundational Authoring Model Schema ──────────────────────────────
 export {
   AUTHORING_SCHEMA_VERSION,
   SUPPORTED_AUTHORING_SCHEMA_VERSIONS,
   type AuthoringSchemaVersion,
   isAuthoringSchemaVersion,
-} from './authoring-schema-version.js';
-
-// Diagnostics
-export {
   AUTHORING_DIAGNOSTIC_CODES,
   type AuthoringDiagnosticCode,
   createAuthoringDiagnostic,
-} from './authoring-diagnostic-codes.js';
-
-// Declaration Types
-export {
   type AuthoringTypeDeclaration,
   type AuthoringTypeDeclarationJSON,
   type AuthoringTypeDefinition,
@@ -34,18 +220,10 @@ export {
   type AuthoringTypeReference,
   isAuthoringTypeDeclaration,
   isAuthoringTypeDefinition,
-} from './authoring-type.js';
-
-// Elements
-export {
   type AuthoringElementKind,
   type AuthoringElement,
   type AuthoringElementJSON,
   isAuthoringElement,
-} from './authoring-element.js';
-
-// Document Root
-export {
   AUTHORING_DOCUMENT_ERROR_CODES,
   type AuthoringDocumentErrorCode,
   AuthoringDocumentValidationError,
@@ -61,7 +239,61 @@ export {
   tryParseAuthoringDocument,
   isAuthoringDocument,
   validateAuthoringDocumentStructure,
-} from './authoring-document.js';
+  MODEL_SOURCE_FORMATS,
+  type ModelSourceFormat,
+  isModelSourceFormat,
+  normalizeModelSourceFormat,
+  type ModelSource,
+  isModelSource,
+  ensureModelSource,
+  type ModelLoadRequest,
+  isModelLoadRequest,
+  type ModelLoadResult,
+  createModelLoadSuccess,
+  createModelLoadFailure,
+  type ModelDocumentParser,
+  type ModelDocumentParseResult,
+  MODEL_SOURCE_MAX_LENGTH,
+  MODEL_SOURCE_MAX_DEPTH,
+  MODEL_SOURCE_MAX_NODES,
+  SourcePath,
+  type SourcePathSegment,
+  type SourceLocationEntry,
+  type SourceLocationMap,
+  JsonModelParser,
+  YamlModelParser,
+  MODEL_LOADER_DIAGNOSTIC_CODES,
+  type ModelLoaderDiagnosticCode,
+  ModelLoader,
+  modelLoader,
+  loadModel,
+} from './authoring/index.js';
 
-// Model Loader
-export * from './loader/index.js';
+export {
+  type PrimitiveKind,
+  type TypeRef,
+  type LegacyFieldType,
+  type LegacyFieldDefinition,
+} from './type-definition.js';
+
+// ─── Re-export kernel types needed by model consumers ─────────────────────────
+export { DiagnosticSeverities } from '@ecosystem/semantic-kernel';
+
+// End public API.
+export type {
+  SemanticId,
+  SemanticElement,
+  SemanticElementMetadata,
+  SemanticElementId,
+  QualifiedName,
+  SemanticContextRef,
+  SemanticVersion,
+  ElementVersionRef,
+  ElementRef,
+  PrimitiveType,
+  Facet,
+  Diagnostic,
+  DiagnosticSeverity,
+  DiagnosticLocation,
+  DiagnosticCode,
+} from '@ecosystem/semantic-kernel';

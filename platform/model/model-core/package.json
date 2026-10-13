@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "@ecosystem/semantic-kernel": "workspace:*",
-    "yaml": "^2.6.0"
+    "yaml": "^2.6.0",
+    "jsonc-parser": "3.3.1"
   },
   "devDependencies": {
     "typescript": "~5.8.3"
